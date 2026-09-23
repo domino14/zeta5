@@ -9,6 +9,8 @@ by A. Fauzan (17 Sep 2026). The paper itself is not included.
 [`Zeta5/Claim.lean`](Zeta5/Claim.lean) states the result using only Mathlib's own definitions:
 
 ```lean
+example : riemannZeta 5 = ∑' n : ℕ, 1 / (n : ℂ) ^ 5 := zeta_nat_eq_tsum_of_gt_one (by norm_num)
+
 example : (riemannZeta 5).im = 0 := Zeta5.riemannZeta_five_im
 
 theorem zeta5_is_irrational : Irrational (riemannZeta 5).re :=
@@ -50,6 +52,18 @@ mistranscribed definition would make the proof fail; it could not make a false c
    These are Lean's three standard axioms: propositional extensionality, the axiom of choice and
    quotient soundness. Any gap left in the proof (a `sorry`) would add `sorryAx` to this list. CI
    runs the same check on every push.
+
+### Independent kernel replay
+
+`#print axioms` trusts the compiled files. A stronger check re-runs every proof through Lean's
+kernel from scratch:
+
+```sh
+for m in $(find Zeta5 -name "*.lean" | sed 's/\.lean$//; s|/|.|g'); do lake env leanchecker $m || echo "FAIL $m"; done
+```
+
+This prints nothing on success and takes about 7 minutes. Don't run it on the root module
+`Zeta5`: that file contains only `import` lines, and checking it uses more than 30 GB of RAM.
 
 If you get `lake: command not found`, `~/.elan/bin` is not on your `PATH`. Run
 `source ~/.elan/env`.

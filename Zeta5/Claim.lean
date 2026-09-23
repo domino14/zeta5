@@ -12,6 +12,11 @@ Check with (from this directory):
     lake env lean Claim.lean
 -/
 
+/-- Mathlib's `riemannZeta 5` is the familiar series `∑_{n ≥ 1} 1/n⁵`. (The `n = 0` term is
+`1/0 = 0` in Lean.) -/
+example : riemannZeta 5 = ∑' n : ℕ, 1 / (n : ℂ) ^ 5 :=
+  zeta_nat_eq_tsum_of_gt_one (by norm_num)
+
 /-- ζ(5) is real. -/
 example : (riemannZeta 5).im = 0 := Zeta5.riemannZeta_five_im
 
