@@ -1,0 +1,23 @@
+name: Build and check the claim
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: Zeta5
+      - name: Check the claim and its axioms
+        working-directory: Zeta5
+        run: |
+          lake env lean Claim.lean | tee claim.out
+          grep -q "depends on axioms: \[propext, Classical.choice, Quot.sound\]" claim.out
